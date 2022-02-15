@@ -20,7 +20,7 @@ import {
 } from "../../utils/globalParameters";
 
 // Signum.js
-import { ContractDataView } from "@burstjs/contracts";
+import { ContractDataView } from "@signumjs/contracts";
 import burstApi from "../../utils/lib/signumjs";
 
 // Components

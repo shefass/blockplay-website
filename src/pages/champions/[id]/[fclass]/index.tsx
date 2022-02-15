@@ -29,8 +29,8 @@ import {
 import { thousands_separators } from "../../../../utils/function/extra";
 
 // Signum.js
-import { ContractDataView } from "@burstjs/contracts";
-import { sumNQTStringToNumber } from "@burstjs/util";
+import { ContractDataView } from "@signumjs/contracts";
+import { sumNQTStringToNumber } from "@signumjs/util";
 import burstApi from "../../../../utils/lib/signumjs";
 
 // Components
