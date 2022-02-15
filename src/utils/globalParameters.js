@@ -94,7 +94,7 @@ const ASSETURL = "https://blockplay.io/";
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// Global variables that are going to be used by the website
+// Global variables that are going to be used by the website *test*
 
 // Set true or false if you wanna use the test-net enviroment or main-net enviroment
 export const useTestNet = true;
