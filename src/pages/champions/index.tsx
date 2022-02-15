@@ -21,7 +21,7 @@ import {
 
 // Signum.js
 import { ContractDataView } from "@burstjs/contracts";
-import burstApi from "../../utils/lib/burstjs";
+import burstApi from "../../utils/lib/signumjs";
 
 // Components
 import ClassCard from "../../components/pages/Champions/classCard/index";

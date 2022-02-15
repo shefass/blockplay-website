@@ -31,7 +31,7 @@ import { thousands_separators } from "../../../../utils/function/extra";
 // Signum.js
 import { ContractDataView } from "@burstjs/contracts";
 import { sumNQTStringToNumber } from "@burstjs/util";
-import burstApi from "../../../../utils/lib/burstjs";
+import burstApi from "../../../../utils/lib/signumjs";
 
 // Components
 import InfoCard from "../../../../components/pages/Champions/infoCard/index";
