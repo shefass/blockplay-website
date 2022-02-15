@@ -16,12 +16,19 @@ import styles from "./Header.module.css";
 // Third-party
 import clsx from "clsx";
 
+//Signumjs
+import { Address } from '@signumjs/core';
+
+import { TickerToUse } from "../../../utils/globalParameters.js";
+
 // Header props
 export interface HeaderProps {
   openSidebar: any;
+  xtConnect: any;
+  xtWallet: any;
 }
 
-const Header = ({ openSidebar }: HeaderProps) => {
+const Header = ({ openSidebar, xtConnect, xtWallet }: HeaderProps) => {
   // Route details
   const router = useRouter();
   const { query, pathname } = router;
@@ -108,6 +115,23 @@ const Header = ({ openSidebar }: HeaderProps) => {
               Build your dApp
             </Typography>
           </Link>
+          
+          {/* Connect to XT wallet, on mobiles do not show, only desktop. Change TS to normal*/}
+          {xtWallet.connectionStatus === "connected" ? 
+          <Typography>
+            Connected as {TickerToUse + Address.fromNumericId(xtWallet.accountId).getReedSolomonAddress(false)}
+          </Typography>
+          : 
+          <IconButton onClick={xtConnect}>
+            <Typography
+              className={clsx(
+                "defaultTransition",
+                query.build && query.build == "app" ? styles.activeLink : null
+              )}
+            >
+              Connect to Signum XT wallet
+            </Typography> 
+          </IconButton>}
         </Grid>
       </Grid>
     </Grid>

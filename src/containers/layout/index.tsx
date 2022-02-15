@@ -12,9 +12,11 @@ import Sidebar from "./Sidebar/index";
 
 interface LayoutProps {
   children: Component | any;
+  xtConnect: any;
+  xtWallet: any;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, xtConnect, xtWallet}: LayoutProps) => {
   // Route details
   const router = useRouter();
 
@@ -51,7 +53,7 @@ const Layout = ({ children }: LayoutProps) => {
       />
 
       {/* Header */}
-      <Header openSidebar={sidebarOpener} />
+      <Header openSidebar={sidebarOpener} xtConnect={xtConnect} xtWallet={xtWallet} />
 
       {/* Sidebar */}
       <Sidebar showSideDrawer={showSidebar} closeSideDrawer={sidebarCloser} />

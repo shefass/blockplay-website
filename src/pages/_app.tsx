@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 // React dependencies
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Material-ui dependencies
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,6 +12,10 @@ import theme from "../styles/theme";
 
 // Global styling
 import "../styles/globals.css";
+
+
+//TODO XT wallet connection NOT USED NOW
+import { connectToWallet } from "../utils/lib/xtwallet";
 
 // Components
 import Layout from "../containers/layout/index";
@@ -47,6 +51,17 @@ const MyApp = ({ Component, pageProps }) => {
     }
   }, []);
 
+    //XT wallet connection
+    const [xtWallet, updateXTstatus] = useState({publicKey: null, connectionStatus: null, accountId: null});
+
+    const xtConnect = () => {
+      const result = connectToWallet();
+      result.then(result => {
+        if(result.connectionStatus === "connected") {
+          updateXTstatus({publicKey: result.publicKey, connectionStatus: result.connectionStatus, accountId: result.accountId});
+      }});
+    };
+
   return (
     <ThemeProvider theme={theme}>
       <Head>
@@ -75,9 +90,8 @@ const MyApp = ({ Component, pageProps }) => {
         <link rel="mask-icon" href="/pinned.svg" color="#258cde"></link>
       </Head>
       <CssBaseline />
-
-      <Layout>
-        <Component {...pageProps} />
+      <Layout xtConnect={xtConnect} xtWallet={xtWallet}>
+        <Component {...pageProps} xtWallet={xtWallet}/>
       </Layout>
     </ThemeProvider>
   );

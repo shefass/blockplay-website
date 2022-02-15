@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Alert from "@material-ui/lab/Alert";
 import AlertTitle from "@material-ui/lab/AlertTitle";
+import Input from '@material-ui/core/Input';
 
 // Material icons
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -30,8 +31,9 @@ import { thousands_separators } from "../../../../utils/function/extra";
 
 // Signum.js
 import { ContractDataView } from "@signumjs/contracts";
-import { sumNQTStringToNumber } from "@signumjs/util";
+import { sumNQTStringToNumber, Amount } from "@signumjs/util";
 import burstApi from "../../../../utils/lib/signumjs";
+import { sendXTtransaction } from "../../../../utils/lib/xtwallet.js";
 
 // Components
 import InfoCard from "../../../../components/pages/Champions/infoCard/index";
@@ -43,6 +45,7 @@ import clsx from "clsx";
 import QRCode from "react-qr-code";
 import copy from "copy-to-clipboard";
 import Fade from "react-reveal/Fade";
+import { UnsignedTransaction } from "@signumjs/core";
 
 // Header props
 export interface HeaderProps {
@@ -51,6 +54,9 @@ export interface HeaderProps {
 
   // Get details of that weight class
   fetchedClass: any;
+
+  //{ publicKey: "", connectionStatus: "connected", accountId: "5671558278589810439" }
+  xtWallet: any;
 }
 
 // Localstorage key for fetching interval
@@ -59,7 +65,7 @@ const storageKey = "specificClassFetch";
 // Interval variables
 var handleFetchingData = null;
 
-const FighthingClass = ({ fetchedId, fetchedClass }: HeaderProps) => {
+const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
   // Router details
   const router = useRouter();
   const { pathname } = router;
@@ -86,6 +92,44 @@ const FighthingClass = ({ fetchedId, fetchedClass }: HeaderProps) => {
   const [isLoading, updateLoadingStatus] = useState(true);
   const [isLoadingStandingData, updateLoadingStandingDataStatus] =
     useState(true);
+
+  //XT connection states
+  const [isConnected, updateXTconection] = useState(xtWallet.connectionStatus);
+  const [balanseXT, updateXTbalanse] = useState(null);
+  const [bet, updateBet] = useState(0);
+
+  const hendleBet = (event : any) => {
+    updateBet(event.target.value);
+  }  
+
+  useEffect(() => {
+    updateXTconection(xtWallet.connectionStatus);
+  });
+
+  useEffect(() => {
+    if(isConnected) {
+      checkXTbalance();
+    }
+  });
+
+  const checkXTbalance = async() => {
+    //Get Account Balance if XT connected TODO prefix selection
+    const { balanceNQT } = await burstApi.account.getAccountBalance(xtWallet.accountId);
+    updateXTbalanse(Amount.fromPlanck(balanceNQT).toString());
+  };
+
+  //Create Transaction for XT
+  const getUnsignedBytes = async() => {
+    try {
+    const unsignedBytes  = await burstApi.transaction.sendAmountToSingleRecipient(
+    { amountPlanck: Amount.fromSigna(bet).getPlanck(), feePlanck: "100000000", recipientId: weightClassData.smartContractAddress, senderPublicKey: xtWallet.publicKey});
+    // @ts-ignore
+     sendXTtransaction(unsignedBytes.unsignedTransactionBytes);
+
+    } catch(e) {
+      console.log(e)
+    }
+  }
 
   // Assign/merge the smart contract data with the hooks
   const assignDataToHook = async () => {
@@ -564,11 +608,23 @@ const FighthingClass = ({ fetchedId, fetchedClass }: HeaderProps) => {
                 style={{ marginTop: "0.7rem" }}
               >
                 {isLoading == false ? (
-                  <Button className={styles.challengeBtn} onClick={makePayment}>
+                  <Button className={styles.challengeBtn} onClick={isConnected ? () =>getUnsignedBytes() : makePayment}>
                     Challenge now
                   </Button>
                 ) : null}
               </Grid>
+
+              {/*XT wallet stuff*/}
+              
+              { isConnected ?
+              (
+              <Grid style={{ marginTop: "0.7rem" }}>
+                <Input type="number" value={bet} onChange={hendleBet}></Input>
+               
+                <Typography>Your balance: {balanseXT}</Typography>
+              </Grid>) 
+                         
+              : null}
             </Grid>
           </Grid>
 
