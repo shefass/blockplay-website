@@ -43,7 +43,7 @@ const Footer = () => {
 
           <Link href="https://signum-network.medium.com/" passHref>
             <Typography component="a" target="_blank">
-              Medium.com <b>*</b>
+              Medium.com
             </Typography>
           </Link>
 
