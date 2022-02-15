@@ -1,6 +1,6 @@
 // Global variables related to node connection
 // Test-net - node connection
-const TEST_NODE = "http://nivbox.co.uk:6876/";
+const TEST_NODE = "https://europe3.testnet.signum.network";
 
 // Production - node connection
 const NODE = "https://wallet.signumcoin.ro/";
@@ -73,7 +73,7 @@ export const weightClassessInfo = {
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-// Global variables for burtcoin explorer
+// Global variables for Signum explorer
 
 // Test-net explorer
 const TEST_EXPLORER =
@@ -97,7 +97,7 @@ const ASSETURL = "https://blockplay.io/";
 // Global variables that are going to be used by the website
 
 // Set true or false if you wanna use the test-net enviroment or main-net enviroment
-export const useTestNet = false;
+export const useTestNet = true;
 
 // Node which website will use
 export const NODEToUse = useTestNet && useTestNet == true ? TEST_NODE : NODE;
