@@ -41,9 +41,9 @@ const Footer = () => {
             </Typography>
           </Link>
 
-          <Link href="https://burstcoin.ist/" passHref>
+          <Link href="https://signum-network.medium.com/" passHref>
             <Typography component="a" target="_blank">
-              Burstcoin.ist <b>*</b>
+              Medium.com <b>*</b>
             </Typography>
           </Link>
 
