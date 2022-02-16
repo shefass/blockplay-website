@@ -163,7 +163,7 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
     const temp = bidAmountNQT.plus(classPriceTagNQT);
 
     //Returning all numbers
-    const probibility = Math.fround(bidAmountNQT.dividedBy(temp).toNumber() * 100).toPrecision(4);
+    const probibility = Math.fround(bidAmountNQT.dividedBy(temp).toNumber() * 100).toFixed(2);
 
     updateBetProbility(probibility);
   }
