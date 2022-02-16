@@ -164,8 +164,13 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
 
     //Returning all numbers
     const probibility = Math.fround(bidAmountNQT.dividedBy(temp).toNumber() * 100).toFixed(2);
-
-    updateBetProbility(probibility);
+    if(probibility === "0.00"){
+      updateBetProbility("0");
+    } else if(probibility === "100.00") {
+      updateBetProbility("100");
+    } else {
+      updateBetProbility(probibility);
+    }
   }
 
   // Assign/merge the smart contract data with the hooks
