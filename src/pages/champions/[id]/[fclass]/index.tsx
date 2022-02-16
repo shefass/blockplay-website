@@ -33,6 +33,7 @@ import { thousands_separators } from "../../../../utils/function/extra";
 // Signum.js
 import { ContractDataView } from "@signumjs/contracts";
 import { sumNQTStringToNumber, Amount } from "@signumjs/util";
+import { Address } from "@signumjs/core";
 import burstApi from "../../../../utils/lib/signumjs";
 import { sendXTtransaction } from "../../../../utils/lib/xtwallet.js";
 
@@ -100,11 +101,11 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
   const [isConnected, updateXTconection] = useState(xtWallet.connectionStatus);
   const [balanseXT, updateXTbalanse] = useState(null);
   const [bet, updateBet] = useState(0);
-  const [betProbablity, updateBetProbility] = useState(0);
+  const [betProbablity, updateBetProbility] = useState("0");
 
   const hendleBet = (event : any) => {
     const value = event.target.value;
-    const itIsNumber = Number(value); // -41155, 0, 45544554 for NaN returns 0
+    //NaN returns 0
     Number(value) && value >= 0 ? updateBet(value) : updateBet(0);
   }  
 
@@ -162,7 +163,7 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
     const temp = bidAmountNQT.plus(classPriceTagNQT);
 
     //Returning all numbers
-    const probibility = Math.fround(bidAmountNQT.dividedBy(temp).toNumber() * 100);
+    const probibility = Math.fround(bidAmountNQT.dividedBy(temp).toNumber() * 100).toPrecision(4);
 
     updateBetProbility(probibility);
   }
@@ -497,10 +498,30 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
         justifyContent="flex-start"
         alignItems="flex-start"
         className={clsx(styles.cardContainer, styles.championCard)}
-      >
-        <Typography variant="h5" style={{ marginBottom: "1.2rem" }}>
-          Defending champion
-        </Typography>
+      > 
+        
+          {/*XT connected, check champion, maybe he is connected*/}
+          {weightClassData.champion.address.slice(3) === Address.fromNumericId(xtWallet.accountId).getReedSolomonAddress(false)
+          ?
+          <Grid 
+            container
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Typography variant="h5">You are the Champion!!!</Typography>
+            <Typography align="center"
+              style={{
+              color: "var(--secondary-text-color)",
+              width: "100%",
+              marginBottom: "1.2rem",
+              }}
+            >
+            Please fight on other category
+            </Typography>
+          </Grid>  
+          :
+          <Typography variant="h5" style={{ marginBottom: "1.2rem" }}>Defending champion</Typography> 
+          }
 
         <Grid
           container
@@ -521,10 +542,8 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
                 // Check if that signum address has a username available
                 weightClassData.champion.name &&
                 weightClassData.champion.name.trim() != "" ? (
-                  <Typography>{weightClassData.champion.name || ""}</Typography>
-                ) : null
+                  <Typography>{weightClassData.champion.name || ""}</Typography>) : null
               }
-
               <Typography component="span" color="textSecondary">
                 {weightClassData.champion.address}
               </Typography>
