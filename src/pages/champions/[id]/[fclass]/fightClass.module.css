@@ -65,6 +65,18 @@
   border-radius: 8px !important;
 }
 
+.challengeBtn:disabled {
+  color: white !important;
+  background: grey !important;
+  text-transform: none !important;
+  width: 100%;
+  max-width: 290px;
+  font-size: 15.5px !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+  border-radius: 8px !important;
+}
+
 /* Cards container */
 .cardContainer {
   background: #ffffff;

@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import Alert from "@material-ui/lab/Alert";
 import AlertTitle from "@material-ui/lab/AlertTitle";
 import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 
 // Material icons
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -45,7 +46,9 @@ import clsx from "clsx";
 import QRCode from "react-qr-code";
 import copy from "copy-to-clipboard";
 import Fade from "react-reveal/Fade";
-import { UnsignedTransaction } from "@signumjs/core";
+
+//It is TestNet or Not
+import { useTestNet } from "../../../../utils/globalParameters";
 
 // Header props
 export interface HeaderProps {
@@ -97,9 +100,12 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
   const [isConnected, updateXTconection] = useState(xtWallet.connectionStatus);
   const [balanseXT, updateXTbalanse] = useState(null);
   const [bet, updateBet] = useState(0);
+  const [betProbablity, updateBetProbility] = useState(0);
 
   const hendleBet = (event : any) => {
-    updateBet(event.target.value);
+    const value = event.target.value;
+    const itIsNumber = Number(value); // -41155, 0, 45544554 for NaN returns 0
+    Number(value) && value >= 0 ? updateBet(value) : updateBet(0);
   }  
 
   useEffect(() => {
@@ -109,26 +115,56 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
   useEffect(() => {
     if(isConnected) {
       checkXTbalance();
+      getBidProbability();
     }
   });
 
   const checkXTbalance = async() => {
-    //Get Account Balance if XT connected TODO prefix selection
+    //Get Account Balance if XT connected
+    const currencySymbol = Amount.CurrencySymbol();
+    const optionsForAmount = {prefix: useTestNet ? "T" + currencySymbol + " " : currencySymbol  + " ", decimalSeparator: ".", fractionGroupSeparator: "", fractionGroupSize: 0, groupSeparator: ",", groupSize: 3, secondaryGroupSize: 0, suffix: ""};
     const { balanceNQT } = await burstApi.account.getAccountBalance(xtWallet.accountId);
-    updateXTbalanse(Amount.fromPlanck(balanceNQT).toString());
+    updateXTbalanse(Amount.fromPlanck(balanceNQT).toString(optionsForAmount));
   };
 
   //Create Transaction for XT
   const getUnsignedBytes = async() => {
     try {
+    const fee = await getFeeSugestion();
     const unsignedBytes  = await burstApi.transaction.sendAmountToSingleRecipient(
-    { amountPlanck: Amount.fromSigna(bet).getPlanck(), feePlanck: "100000000", recipientId: weightClassData.smartContractAddress, senderPublicKey: xtWallet.publicKey});
+    { amountPlanck: Amount.fromSigna(bet).getPlanck(), feePlanck: fee, recipientId: weightClassData.smartContractAddress, senderPublicKey: xtWallet.publicKey});
+
     // @ts-ignore
      sendXTtransaction(unsignedBytes.unsignedTransactionBytes);
 
     } catch(e) {
       console.log(e)
     }
+  };
+
+  //Get Fee sugestion
+  const getFeeSugestion = async() => {
+    try {
+    const { cheap } = await burstApi.network.getSuggestedFees();
+    return cheap.toString();
+    } catch(e) {
+      console.log(e)
+    }
+  };
+
+  // Calculate probability. REPETED CODE 712line TODO
+ // (Bid amount) / (Bid amount + weight class)
+ const getBidProbability = () => {
+    const bidAmountNQT = Amount.fromSigna(bet).getRaw();
+    const classPriceTagNQT = Amount.fromSigna(weightClassessInfo[weightkey].priceTag).getRaw();
+
+    //(Bid amount + weight class)
+    const temp = bidAmountNQT.plus(classPriceTagNQT);
+
+    //Returning all numbers
+    const probibility = Math.fround(bidAmountNQT.dividedBy(temp).toNumber() * 100);
+
+    updateBetProbility(probibility);
   }
 
   // Assign/merge the smart contract data with the hooks
@@ -608,7 +644,11 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
                 style={{ marginTop: "0.7rem" }}
               >
                 {isLoading == false ? (
-                  <Button className={styles.challengeBtn} onClick={isConnected ? () =>getUnsignedBytes() : makePayment}>
+                  <Button
+                    className={styles.challengeBtn} 
+                    onClick={isConnected ? () =>getUnsignedBytes() : makePayment}
+                    disabled={isConnected && bet<=0}
+                    >
                     Challenge now
                   </Button>
                 ) : null}
@@ -619,11 +659,12 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
               { isConnected ?
               (
               <Grid style={{ marginTop: "0.7rem" }}>
+                <InputLabel>Set your fighters power, your winning chanses are {betProbablity} %</InputLabel>
                 <Input type="number" value={bet} onChange={hendleBet}></Input>
                
                 <Typography>Your balance: {balanseXT}</Typography>
-              </Grid>) 
-                         
+              </Grid>
+              ) 
               : null}
             </Grid>
           </Grid>
