@@ -501,7 +501,7 @@ const FighthingClass = ({ fetchedId, fetchedClass, xtWallet }: HeaderProps) => {
       > 
         
           {/*XT connected, check champion, maybe he is connected*/}
-          {weightClassData.champion.address.slice(3) === Address.fromNumericId(xtWallet.accountId).getReedSolomonAddress(false)
+          {isConnected && weightClassData.champion.address.slice(3) === Address.fromNumericId(xtWallet.accountId).getReedSolomonAddress(false)
           ?
           <Grid 
             container
